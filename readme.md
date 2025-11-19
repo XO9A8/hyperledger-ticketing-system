@@ -70,11 +70,18 @@ docker-compose up -d
 ```
 
 ### 3. Deploy Chaincode
-(Note: These steps are typically handled by a script, e.g., `install-fabric.sh` or manual peer commands)
-1.  **Package** the Go chaincode.
-2.  **Install** on all peers (`peer0.railway`, `peer0.airway`, `peer0.bus`).
-3.  **Approve** the definition for each organization.
-4.  **Commit** the chaincode definition to the channel.
+We have provided a script to automate the channel creation, peer joining, and chaincode deployment process.
+
+```bash
+# Run the deployment script
+./deploy.sh
+```
+
+This script performs the following:
+1.  Joins the Orderer to `mychannel` using `osnadmin`.
+2.  Joins all peers (Railway, Airway, Bus) to the channel.
+3.  Packages, installs, approves, and commits the `ticketing` chaincode.
+4.  Initializes the ledger with default data.
 
 ---
 
@@ -132,6 +139,7 @@ distb-ot-network/
 ├── configtx.yaml           # Channel definitions
 ├── crypto-config.yaml      # Identity (MSP) definitions
 ├── docker-compose.yaml     # Container infrastructure
+├── deploy.sh               # Automated deployment script
 ├── chaincode/              # Smart Contract Source Code
 │   └── ticketing/
 │       ├── go.mod

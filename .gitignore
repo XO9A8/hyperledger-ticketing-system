@@ -1,52 +1,46 @@
-# Hyperledger Fabric
+# --- Hyperledger Fabric Artifacts ---
+# Generated crypto material (CRITICAL: Contains private keys)
 organizations/
+crypto-config/
+
+# Generated channel artifacts (Genesis blocks, transactions)
 channel-artifacts/
 *.block
+*.tx
 
-# Binaries
+# Downloaded Fabric Binaries
 bin/
-builders/
 
-# Private keys and certificates
-*.pem
-*_sk
-priv_sk
-
-# Logs
-*.log
-
-# Caliper reports
-caliper-workspace/report.html
-caliper-workspace/*.html
-
-# OS
-.DS_Store
-Thumbs.db
-
-# IDE
-.vscode/
-.idea/
-*.swp
-*.swo
-*~
-
-# Node
-node_modules/
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-
-# Go
+# --- Chaincode / Go ---
+# Compiled binaries
 *.exe
-*.exe~
 *.dll
 *.so
 *.dylib
 *.test
 *.out
+
+# Vendor directory (optional, usually ignored if using Go Modules)
 vendor/
 
-# Temporary files
-*.tmp
-*.temp
-.cache/
+# --- Node.js / Caliper ---
+node_modules/
+npm-debug.log
+yarn-debug.log
+yarn-error.log
+caliper-workspace/report.html
+caliper-workspace/log/
+
+# --- Docker / Runtime ---
+# Mounted production directories
+production/
+tmp/
+
+# --- IDEs & OS ---
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
