@@ -1,0 +1,25 @@
+test:
+  name: Ticket Registration Benchmark
+  description: Benchmark for RegisterPassenger function
+  workers:
+    type: local
+    number: 2
+  rounds:
+    - label: Register Passenger
+      description: Test the throughput of registering new passengers
+      txNumber: 100
+      rateControl:
+        type: fixed-rate
+        opts:
+          tps: 15
+      workload:
+        module: workload.js
+    - label: Buy Ticket
+      description: Test the throughput of buying tickets (high contention)
+      txNumber: 50
+      rateControl:
+        type: fixed-rate
+        opts:
+          tps: 10
+      workload:
+        module: workload-buyTicket.js

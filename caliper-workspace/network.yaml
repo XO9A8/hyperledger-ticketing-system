@@ -1,0 +1,24 @@
+name: Ticketing Benchmark
+version: "2.0.0"
+
+caliper:
+  blockchain: fabric
+
+channels:
+  - channelName: mychannel
+    contracts:
+      - id: ticketing
+
+organizations:
+  - mspid: RailwayMSP
+    identities:
+      certificates:
+        - name: 'User1'
+          clientPrivateKey:
+            path: '../organizations/peerOrganizations/railway.example.com/users/User1@railway.example.com/msp/keystore/priv_sk'
+          clientSignedCert:
+            path: '../organizations/peerOrganizations/railway.example.com/users/User1@railway.example.com/msp/signcerts/User1@railway.example.com-cert.pem'
+    connectionProfile:
+      path: 'connection.yaml'
+      discover: false
+

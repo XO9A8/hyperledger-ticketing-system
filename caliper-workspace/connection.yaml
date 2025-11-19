@@ -1,0 +1,59 @@
+name: "Ticketing Network"
+version: "1.0.0"
+client:
+  organization: Railway
+  connection:
+    timeout:
+      peer:
+        endorser: '300'
+channels:
+  mychannel:
+    orderers:
+      - orderer.example.com
+    peers:
+      peer0.railway.example.com:
+        endorsingPeer: true
+        chaincodeQuery: true
+        ledgerQuery: true
+        eventSource: true
+      peer0.airway.example.com:
+        endorsingPeer: true
+        chaincodeQuery: true
+        ledgerQuery: true
+        eventSource: true
+      peer0.bus.example.com:
+        endorsingPeer: true
+        chaincodeQuery: true
+        ledgerQuery: true
+        eventSource: true
+organizations:
+  Railway:
+    mspid: RailwayMSP
+    peers:
+      - peer0.railway.example.com
+orderers:
+  orderer.example.com:
+    url: grpcs://orderer.example.com:7050
+    tlsCACerts:
+      path: '../organizations/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts/tlsca.example.com-cert.pem'
+    grpcOptions:
+      ssl-target-name-override: orderer.example.com
+peers:
+  peer0.railway.example.com:
+    url: grpcs://peer0.railway.example.com:7051
+    tlsCACerts:
+      path: '../organizations/peerOrganizations/railway.example.com/tlsca/tlsca.railway.example.com-cert.pem'
+    grpcOptions:
+      ssl-target-name-override: peer0.railway.example.com
+  peer0.airway.example.com:
+    url: grpcs://peer0.airway.example.com:9051
+    tlsCACerts:
+      path: '../organizations/peerOrganizations/airway.example.com/tlsca/tlsca.airway.example.com-cert.pem'
+    grpcOptions:
+      ssl-target-name-override: peer0.airway.example.com
+  peer0.bus.example.com:
+    url: grpcs://peer0.bus.example.com:11051
+    tlsCACerts:
+      path: '../organizations/peerOrganizations/bus.example.com/tlsca/tlsca.bus.example.com-cert.pem'
+    grpcOptions:
+      ssl-target-name-override: peer0.bus.example.com
