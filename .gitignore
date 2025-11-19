@@ -10,6 +10,7 @@ channel-artifacts/
 
 # Downloaded Fabric Binaries
 bin/
+builders/ccaas/bin/
 
 # --- Chaincode / Go ---
 # Compiled binaries
@@ -19,6 +20,10 @@ bin/
 *.dylib
 *.test
 *.out
+
+# Packaged Chaincode
+*.tar.gz
+*.tgz
 
 # Vendor directory (optional, usually ignored if using Go Modules)
 vendor/
