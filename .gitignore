@@ -35,11 +35,13 @@ yarn-debug.log
 yarn-error.log
 caliper-workspace/report.html
 caliper-workspace/log/
+*.log
 
 # --- Docker / Runtime ---
 # Mounted production directories
 production/
 tmp/
+fabric-samples/
 
 # --- IDEs & OS ---
 .idea/

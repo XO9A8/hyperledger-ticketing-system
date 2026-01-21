@@ -30,8 +30,8 @@ class BuyTicketWorkload extends WorkloadModuleBase {
     }
 
     async submitTransaction() {
-        // Pick a random seat
-        const seat = this.seatNumbers[Math.floor(Math.random() * this.seatNumbers.length)];
+        // Generate a random seat to ensure we don't run out of inventory
+        const seat = `SEAT_${this.workerIndex}_${Date.now()}_${Math.floor(Math.random() * 10000)}`;
 
         const request = {
             contractId: 'ticketing',

@@ -21,7 +21,7 @@ _arg_comp=('' )
 
 # if version not passed in, default to latest released version
 # if ca version not passed in, default to latest released version
-_arg_fabric_version="3.0.0-beta"
+_arg_fabric_version="2.5.14"
 _arg_ca_version="1.5.15"
 
 OS=$(uname -s|tr '[:upper:]' '[:lower:]'|sed 's/mingw64_nt.*/windows/')

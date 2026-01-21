@@ -31,6 +31,14 @@ organizations:
     mspid: RailwayMSP
     peers:
       - peer0.railway.example.com
+  Airway:
+    mspid: AirwayMSP
+    peers:
+      - peer0.airway.example.com
+  Bus:
+    mspid: BusMSP
+    peers:
+      - peer0.bus.example.com
 orderers:
   orderer.example.com:
     url: grpcs://orderer.example.com:7050

@@ -21,4 +21,55 @@ organizations:
     connectionProfile:
       path: 'connection.yaml'
       discover: false
+    contracts:
+      - id: ticketing
+        contractID: ticketing
+        version: v1
+        channel: mychannel
+        targetPeers:
+          - peer0.railway.example.com
+          - peer0.airway.example.com
+          - peer0.bus.example.com
+
+  - mspid: AirwayMSP
+    identities:
+      certificates:
+        - name: 'User1'
+          clientPrivateKey:
+            path: '../organizations/peerOrganizations/airway.example.com/users/User1@airway.example.com/msp/keystore/priv_sk'
+          clientSignedCert:
+            path: '../organizations/peerOrganizations/airway.example.com/users/User1@airway.example.com/msp/signcerts/User1@airway.example.com-cert.pem'
+    connectionProfile:
+      path: 'connection.yaml'
+      discover: false
+    contracts:
+      - id: ticketing
+        contractID: ticketing
+        version: v1
+        channel: mychannel
+        targetPeers:
+          - peer0.railway.example.com
+          - peer0.airway.example.com
+          - peer0.bus.example.com
+
+  - mspid: BusMSP
+    identities:
+      certificates:
+        - name: 'User1'
+          clientPrivateKey:
+            path: '../organizations/peerOrganizations/bus.example.com/users/User1@bus.example.com/msp/keystore/priv_sk'
+          clientSignedCert:
+            path: '../organizations/peerOrganizations/bus.example.com/users/User1@bus.example.com/msp/signcerts/User1@bus.example.com-cert.pem'
+    connectionProfile:
+      path: 'connection.yaml'
+      discover: false
+    contracts:
+      - id: ticketing
+        contractID: ticketing
+        version: v1
+        channel: mychannel
+        targetPeers:
+          - peer0.railway.example.com
+          - peer0.airway.example.com
+          - peer0.bus.example.com
 

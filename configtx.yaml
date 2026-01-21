@@ -72,7 +72,7 @@ Organizations:
 
 Capabilities:
     Channel: &ChannelCapabilities
-        V2_0: true
+        V3_0: true
     Orderer: &OrdererCapabilities
         V2_0: true
     Application: &ApplicationCapabilities
@@ -101,8 +101,6 @@ Application: &ApplicationDefaults
 
 Orderer: &OrdererDefaults
     OrdererType: etcdraft
-    Addresses:
-        - orderer.example.com:7050
     EtcdRaft:
         Consenters:
         - Host: orderer.example.com

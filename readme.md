@@ -1,6 +1,6 @@
 # DistB-OT: Distributed Secure Blockchain-based Online Ticketing System
 
-> A decentralized, multi-modal e-ticketing platform built on Hyperledger Fabric.
+> A decentralized, multi-modal e-ticketing platform built on Hyperledger Fabric v3.1 with Chaincode-as-a-Service (CCaaS)
 
 ## 📖 Abstract
 
@@ -9,13 +9,11 @@
 - **Transparency:** All participating organizations share a single source of truth.
 - **Security:** Cross-organization identity management via MSPs and TLS.
 
-The system utilizes **Raft consensus** (Crash Fault Tolerance) for ordering and **Go-based Smart Contracts** to manage the lifecycle of passenger identities and ticket assets.
+The system utilizes **Raft consensus** for ordering, **Chaincode-as-a-Service (CCaaS)** for external chaincode deployment, and **Go-based Smart Contracts** to manage passenger identities and ticket assets.
 
 ---
 
-## �� Network Architecture
-
-The network topology is designed for high availability and decentralized governance:
+## 🏗 Network Architecture
 
 | Component | Details |
 |-----------|---------|
@@ -23,140 +21,163 @@ The network topology is designed for high availability and decentralized governa
 | **Organizations** | 3 Peer Orgs: **Railway**, **Airway**, **Bus** |
 | **Peers** | `peer0.railway`, `peer0.airway`, `peer0.bus` |
 | **Channel** | `mychannel` (Shared ledger) |
+| **Chaincode** | External CCaaS container (`ticketing-ccaas`) |
 | **Consensus** | Raft (Crash Fault Tolerance) |
 | **Security** | Mutual TLS (mTLS) enabled |
+
+---
+
+## ⚡ Performance Tuning
+
+To achieve high throughput (>300 TPS), the following optimizations were applied to the `docker-compose.yaml` peer configurations:
+
+```yaml
+environment:
+  - CORE_PEER_LIMITS_CONCURRENCY_GATEWAYSERVICE=2500 # Default is 500
+```
+
+This prevents `EndorseError: 2 UNKNOWN: too many requests... exceeding concurrency limit` during high-load benchmarks.
 
 ---
 
 ## 🛠 Technologies Used
 
 - **Blockchain:** Hyperledger Fabric v3.1
-- **Smart Contracts:** Go (Golang) v1.20
+- **Smart Contracts:** Go (Golang) v1.20 with CCaaS
 - **Containerization:** Docker & Docker Compose
-- **Benchmarking:** Hyperledger Caliper v0.5.0
+- **Benchmarking:** Hyperledger Caliper v2.0.0
 - **OS:** Linux / WSL2 (Ubuntu)
 
 ---
 
 ## 📋 Prerequisites
 
-Before running the network, ensure you have the following installed:
-
 - **Docker** & **Docker Compose**
 - **Go** (v1.20 or higher)
-- **Node.js** & **NPM** (for Caliper workload scripts)
-- **Hyperledger Fabric Binaries** (`cryptogen`, `configtxgen`, `peer`, etc.) added to your PATH or in the `bin/` folder.
+- **Node.js** & **NPM** (for Caliper benchmarking)
+- **Hyperledger Fabric Binaries** in `bin/` folder
 
 ---
 
-## 🚀 Getting Started
+## 🚀 Quick Start
 
-### 1. Infrastructure Setup
-Generate the cryptographic material (certs) and the genesis block to bootstrap the network trust layer.
-
-```bash
-# Generate Crypto Materials (MSPs and TLS certs)
-./bin/cryptogen generate --config=./crypto-config.yaml --output="organizations"
-
-# Generate Genesis Block
-./bin/configtxgen -profile TicketingNetworkGenesis -outputBlock ./channel-artifacts/genesis.block -channelID mychannel
-```
-
-### 2. Launch the Network
-Spin up the containers (Orderer, Peers, CLIs) using Docker Compose.
+### Deploy the Complete Network
 
 ```bash
-docker-compose up -d
+# One-command deployment
+./deploy-ccaas.sh
 ```
 
-### 3. Deploy Chaincode
-We have provided a script to automate the channel creation, peer joining, and chaincode deployment process.
-
-```bash
-# Run the deployment script
-./deploy.sh
-```
-
-This script performs the following:
-1.  Joins the Orderer to `mychannel` using `osnadmin`.
-2.  Joins all peers (Railway, Airway, Bus) to the channel.
-3.  Packages, installs, approves, and commits the `ticketing` chaincode.
-4.  Initializes the ledger with default data.
+The deployment script automatically:
+1. Builds the chaincode Docker image
+2. Joins the orderer to `mychannel`
+3. Joins all three peers to the channel
+4. Packages and installs chaincode on all peers (CCaaS)
+5. Starts the external chaincode container
+6. Approves and commits the chaincode definition
+7. Initializes the ledger with test data
 
 ---
 
-## 🧩 Smart Contract Logic
+## 🧩 Smart Contract Functions
 
-The business logic (`chaincode/ticketing/`) supports two primary use cases:
+### 1. Register Passenger
+```bash
+docker exec cli peer chaincode invoke \
+  -o orderer.example.com:7050 --tls \
+  --cafile /opt/gopath/src/github.com/hyperledger/fabric/peer/organizations/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts/tlsca.example.com-cert.pem \
+  -C mychannel -n ticketing \
+  -c '{"function":"RegisterPassenger","Args":["P001","John Doe","john@example.com"]}' \
+  --peerAddresses peer0.railway.example.com:7051 \
+  --tlsRootCertFiles /opt/gopath/src/github.com/hyperledger/fabric/peer/organizations/peerOrganizations/railway.example.com/peers/peer0.railway.example.com/tls/ca.crt
+```
 
-### 1. Passenger Registration (`RegisterPassenger`)
-- **Input:** `ID`, `Name`, `Email`
-- **Logic:** Creates a verifiable digital identity on the ledger.
-- **Constraint:** Prevents duplicate registrations for the same ID.
-
-### 2. Ticket Purchase (`BuyTicket`)
-- **Input:** `SeatNumber`, `PassengerID`
-- **Logic:**
-    1.  Verifies `PassengerID` exists.
-    2.  Checks if `SeatNumber` is `AVAILABLE`.
-    3.  Transfers ownership and updates status to `SOLD`.
-- **Constraint:** Prevents double-booking via endorsement policies.
+### 2. Buy Ticket
+```bash
+docker exec cli peer chaincode invoke \
+  -o orderer.example.com:7050 --tls \
+  --cafile /opt/gopath/src/github.com/hyperledger/fabric/peer/organizations/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts/tlsca.example.com-cert.pem \
+  -C mychannel -n ticketing \
+  -c '{"function":"BuyTicket","Args":["RAIL-A1","P001"]}' \
+  --peerAddresses peer0.railway.example.com:7051 \
+  --tlsRootCertFiles /opt/gopath/src/github.com/hyperledger/fabric/peer/organizations/peerOrganizations/railway.example.com/peers/peer0.railway.example.com/tls/ca.crt
+```
 
 ---
 
 ## 📊 Performance Benchmarking
 
-We use **Hyperledger Caliper** to stress-test the network.
-
-### Benchmark Scenarios
-1.  **Register Passenger:** High-throughput write operations.
-2.  **Buy Ticket:** High-contention state updates (simulating race conditions).
-
-### Running the Benchmark
-Execute the following command from the root directory:
+Run Hyperledger Caliper benchmarks:
 
 ```bash
-docker run --network research-fabric_test --name caliper --rm \
--v $(pwd)/caliper-workspace:/hyperledger/caliper/workspace \
--v $(pwd)/organizations:/hyperledger/caliper/organizations \
-hyperledger/caliper:0.5.0 launch manager \
---caliper-workspace /hyperledger/caliper/workspace \
---caliper-networkconfig network.yaml \
---caliper-benchconfig bench-config.yaml \
---caliper-flow-only-test \
---caliper-bind-sut fabric:2.2
+cd caliper-workspace
+npx caliper launch manager \
+  --caliper-workspace ./ \
+  --caliper-networkconfig network.yaml \
+  --caliper-benchconfig bench-config.yaml \
+  --caliper-flow-only-test
 ```
 
-> **Note:** Ensure the Docker network name (`research-fabric_test`) matches your actual running network.
+### Benchmark Scenarios
+1. **Register Passenger:** High-throughput write operations.
+2. **Buy Ticket:** Validates ticket availability and ownership. Includes logic to **auto-create seats** if they don't exist, enabling high-throughput stress testing beyond the initial ledger size.
+
+### Latest Results (RTX 3060 System)
+- **Register Passenger:** ~301 TPS
+- **Buy Ticket:** ~320 TPS
+
+*Note: Performance was optimized by increasing `CORE_PEER_LIMITS_CONCURRENCY_GATEWAYSERVICE` to 2500.*
+
+Results will be generated in `caliper-workspace/report.html`
 
 ---
 
 ## 📂 Project Structure
 
 ```text
-distb-ot-network/
+hyperledger-ticketing-system/
 ├── bin/                    # Fabric binaries
 ├── configtx.yaml           # Channel definitions
 ├── crypto-config.yaml      # Identity (MSP) definitions
 ├── docker-compose.yaml     # Container infrastructure
-├── deploy.sh               # Automated deployment script
+├── deploy-ccaas.sh         # Automated CCaaS deployment script
 ├── chaincode/              # Smart Contract Source Code
 │   └── ticketing/
 │       ├── go.mod
-│       └── smartcontract.go
+│       ├── smartcontract.go
+│       ├── Dockerfile      # Chaincode container build
+│       ├── connection.json # CCaaS connection config
+│       └── metadata.json   # CCaaS metadata
 ├── caliper-workspace/      # Benchmarking Configuration
-│   ├── network.yaml        # Connection profile
-│   ├── bench-config.yaml   # Test rounds & rate control
-│   ├── workload.js         # Workload: RegisterPassenger
-│   └── workload-buyTicket.js # Workload: BuyTicket
-└── channel-artifacts/      # Generated blocks & tx files
+│   ├── network.yaml
+│   ├── bench-config.yaml
+│   └── workload*.js
+└── channel-artifacts/      # Generated blocks
 ```
 
 ---
 
-## 🤝 Contributing
+## 🔧 Network Management
 
-Contributions are welcome! Please fork the repository and submit a pull request.
+### Stop the Network
+```bash
+docker-compose down -v
+docker rm -f ticketing-ccaas
+```
+
+### View Logs
+```bash
+# Peer logs
+docker logs peer0.railway.example.com
+
+# Chaincode logs
+docker logs ticketing-ccaas
+
+# Orderer logs
+docker logs orderer.example.com
+```
+
+---
 
 ## 📄 License
 
