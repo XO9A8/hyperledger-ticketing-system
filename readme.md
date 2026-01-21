@@ -50,7 +50,22 @@ This prevents `EndorseError: 2 UNKNOWN: too many requests... exceeding concurren
 
 ---
 
-## 📋 Prerequisites
+## � Test Environment
+
+Benchmarks were conducted on the following hardware/software configuration:
+
+| Component | Specification |
+|-----------|---------------|
+| **OS** | Ubuntu 24.04.3 LTS (Noble Numbat) |
+| **CPU** | Intel® Core™ i9-14900K (32 vCPUs) |
+| **RAM** | 16 GB |
+| **Docker** | v29.1.3 |
+| **Node.js** | v22.22.0 |
+| **Optimization** | Gateway Concurrency Limit: 2500 |
+
+---
+
+## �📋 Prerequisites
 
 - **Docker** & **Docker Compose**
 - **Go** (v1.20 or higher)
