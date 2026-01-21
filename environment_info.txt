@@ -1,0 +1,38 @@
+System Environment Report
+
+1. Virtualization Environment
+-----------------------------
+Platform: Windows Subsystem for Linux 2 (WSL2)
+Kernel: Linux version 6.6.87.2-microsoft-standard-WSL2 #1 SMP PREEMPT_DYNAMIC Thu Jun  5 18:30:46 UTC 2025
+
+2. Operating System
+-------------------
+Distribution: Ubuntu 24.04.3 LTS (Noble Numbat)
+
+3. Hardware Specifications
+--------------------------
+CPU Model: Intel(R) Core(TM) i9-14900K
+Architecture: x86_64
+Total CPUs: 32
+Cores per Socket: 16
+Threads per Core: 2
+BogoMIPS: 6374.40
+
+GPU Model: NVIDIA GeForce RTX 3060
+Driver Version: 591.74
+CUDA Version: 13.1
+Memory: 12GB GDDR6
+
+System Memory (RAM):
+  Host (Windows): 32 GB
+  WSL2 Allocation: 15Gi (Available to Linux)
+
+4. Software Versions
+--------------------
+Docker: version 29.1.3, build f52814d
+Node.js: v22.22.0
+
+5. Network Tuning
+-----------------
+Hyperledger Fabric Version: v3.1
+Concurrency Optimization: CORE_PEER_LIMITS_CONCURRENCY_GATEWAYSERVICE=2500
